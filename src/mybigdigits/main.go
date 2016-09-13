@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 var barType bool
@@ -33,16 +34,7 @@ func init() {
 }
 
 func main() {
-
-	// if len(os.Args) == 1 {
-	// 	fmt.Printf("usage: %s <whole-number>\n", filepath.Base(os.Args[0]))
-	// 	os.Exit(1)
-	// }
 	flag.Parse()
-	fmt.Println("flag: ", barType)
-	// for i := range os.Args {
-	// 	fmt.Println("flg: ", os.Args[i])
-	// }
 	var stringOfDigits string
 	if barType && len(os.Args) > 2 {
 		stringOfDigits = os.Args[2]
@@ -52,18 +44,26 @@ func main() {
 
 	for row := range bigDigits[0] {
 		line := ""
-		//fmt.Println("row: ", row)
 		for column := range stringOfDigits {
 			//fmt.Printf("string of digit: %T, %v\n", stringOfDigits, stringOfDigits)
 			digit := stringOfDigits[column] - '0'
 			if digit >= 0 && digit <= 9 {
-				line += bigDigits[digit][row] + "  "
+				line += bigDigits[digit][row]
+				if column+1 < len(stringOfDigits) {
+					line += "  "
+				}
 			} else {
 				log.Fatal("invalid whole number")
 			}
 			//fmt.Println("line after column: \n", line, "\n")
 		}
+		if barType && row == 0 {
+			fmt.Println(strings.Repeat("*", len(line)))
+		}
 		fmt.Println(line)
+		if barType && row+1 == len(bigDigits[0]) {
+			fmt.Println(strings.Repeat("*", len(line)))
+		}
 	}
 }
 
