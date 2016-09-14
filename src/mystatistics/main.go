@@ -41,6 +41,7 @@ type statistics struct {
 	numbers []float64
 	mean    float64
 	median  float64
+	mode    []float64
 	stdDev  float64
 }
 
@@ -92,8 +93,9 @@ func formatStats(stats statistics) string {
 <tr><td>Count</td><td>%d</td></tr>
 <tr><td>Mean</td><td>%f</td></tr>
 <tr><td>Median</td><td>%f</td></tr>
-<tr><td>Standard Deviation</td><td>%f</td></tr>
-</table>`, stats.numbers, len(stats.numbers), stats.mean, stats.median, stats.stdDev)
+<tr><td>Mode</td><td>%v</td></tr>
+<tr><td>Std. Dev.</td><td>%f</td></tr>
+</table>`, stats.numbers, len(stats.numbers), stats.mean, stats.median, stats.mode, stats.stdDev)
 }
 
 func getStats(numbers []float64) (stats statistics) {
@@ -101,6 +103,7 @@ func getStats(numbers []float64) (stats statistics) {
 	sort.Float64s(stats.numbers)
 	stats.mean = sum(numbers) / float64(len(numbers))
 	stats.median = median(numbers)
+	stats.mode = mode(numbers)
 	stats.stdDev = standardDeviation(numbers, stats.mean)
 	return stats
 }
@@ -121,11 +124,38 @@ func median(numbers []float64) float64 {
 	return result
 }
 
-func standardDeviation(numbers []float64, mean float64) float64 {
-	var rSum float64
+func mode(numbers []float64) (modeList []float64) {
+
+	modeMap := make(map[float64]int)
+	freq := 0
+
 	for _, n := range numbers {
-		rSum += (n - mean) * (n - mean)
+		modeMap[n]++
+		if modeMap[n] > freq {
+			freq = modeMap[n]
+		}
 	}
-	fmt.Println("rSum: ", rSum)
-	return math.Sqrt(rSum/float64(len(numbers)) - float64(1))
+	// isMode is set to true when we find a value different then the frequency
+	isMode := false
+	for k, v := range modeMap {
+		if v != freq {
+			isMode = true
+		}
+		if v == freq {
+			modeList = append(modeList, k)
+		}
+	}
+	sort.Float64s(modeList)
+	if isMode {
+		return modeList
+	} else {
+		return modeList[:0]
+	}
+}
+
+func standardDeviation(numbers []float64, mean float64) (stdev float64) {
+	for _, n := range numbers {
+		stdev += (n - mean) * (n - mean)
+	}
+	return math.Sqrt(stdev / (float64(len(numbers)) - float64(1)))
 }
