@@ -10,7 +10,7 @@ func main() {
 		{5, 5, 7, 8},
 		{9, 11, 11},
 		{12, 13, 15, 14},
-		{16, 17, 18, 19, 20}}
+		{16, 17, 18, 19, 20, 32}}
 
 	slice := UniqueInts(irregularMatrix)
 	fmt.Printf("1x%d: %v\n", len(slice), slice)
@@ -27,27 +27,30 @@ func Print2D(matrix [][]int) {
 	fmt.Printf("1x%d: %v\n", len(matrix), matrix)
 }
 
+func ComputeRow(matrix []int, column int) int {
+	row := len(matrix) / column
+	col := len(matrix) % column
+	fmt.Println("row -> col\n", row, col)
+	if col > 0 {
+		row++
+	}
+	return row
+}
+
 func Make2D(matrix []int, column int) [][]int {
-	mMatrix := make([][]int, len(matrix), len(matrix))
+	mMatrix := make([][]int, ComputeRow(matrix, column))
 	j := column
 	k := 0
 
-	//fmt.Printf("matrix: %v\n", mMatrix)
 	for _, val := range matrix {
-		fmt.Println("j: ", j)
 		if j > 0 {
 			mMatrix[k] = append(mMatrix[k], val)
-			fmt.Printf("matrix: %v\n", mMatrix)
-			//fmt.Println("i:j -> column, value", i, j, column, val)
 			j--
 		} else {
-			//fmt.Println("i:j -> column, value", i, j, column, val)
 			k++
 			mMatrix[k] = append(mMatrix[k], val)
-			fmt.Printf("matrix: %v\n", mMatrix)
 			j = column - 1
 		}
-
 	}
 	return mMatrix
 }
